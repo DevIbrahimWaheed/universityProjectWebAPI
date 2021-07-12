@@ -2,16 +2,11 @@ const {google} = require('googleapis')
 const Users = require('../models/usersModel')
 const Application = require('../models/applicationModel');
 
-/**
- *
- * @param  {Client_ID} '530251999506-507mc3ciahfnb9nbotctk3n7me7jbcud.apps.googleusercontent.com'
- * @param  {Client_SERECT} '2PD2puQy3Q2gYeW_qgGevChq'
- * @param  {REDirect_URL} 'https
- */
+
 const oauth2Client = new google.auth.OAuth2(
-    '530251999506-507mc3ciahfnb9nbotctk3n7me7jbcud.apps.googleusercontent.com',
-    '2PD2puQy3Q2gYeW_qgGevChq',
-    'http://localhost:3000/google' 
+   
+
+   
   );
 
 // above localhost must be switch! https://jackson-metal-3000.codio-box.uk/google ... i used localhost because of VS studio so yea whoever is reading this!
