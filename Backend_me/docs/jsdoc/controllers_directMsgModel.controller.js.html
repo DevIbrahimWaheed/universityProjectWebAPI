@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: controllers/directMsgModel.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: controllers/directMsgModel.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+
+* A module that is in-charged of CRUD operation it acts as a middleware for the routes instead of being in the routers area
+
+* @module controllers/directMsgModel.controller
+
+* @author Ibrahim Waheed
+
+* @see route/* for the interaction with the routes  */
+const DirectMsg = require('../models/directMsgModel')
+
+
+
+const prefix = '/api/v1/msg'
+
+
+// use by both!
+exports.createMsg = async(ctx,next) =>{
+  try{
+    const id = ctx.params.id
+    const {text} = ctx.request.body // stored in react state for first post 
+    const createdMessage =  await new DirectMsg({
+      message:{
+        text:text 
+      },
+      users:[{
+        user:id
+      }],
+      sender:id
+      
+    })
+    console.log(createdMessage);
+    await createdMessage.save()
+    const message =  await DirectMsg.find({ 'users.user':id })
+    .sort({ updatedAt: -1 })
+    .limit(20)
+
+    ctx.status =200
+    ctx.body={
+      data:message,
+
+    }
+  }
+  catch(e){
+    ctx.status = 400
+    ctx.body ={
+      msg:"ERROR!"
+    }
+    console.log(e)
+
+  }
+}
+
+
+// kind of a update put you actual create a new message which will ref users frontend match the user ids for admin to responsed
+exports.updateMsgAdmin = async (ctx,next) =>{
+  try{ 
+  const {adminid,text , user} = ctx.request.body // user from readMSG which will allow access to sender ID
+  console.log("admin:",adminid,"text:",text,"user:",user)
+  const message =  await new DirectMsg({
+    message:{
+      text:text
+    },
+    sender:adminid,
+    users:[{user:user},{user:adminid}],
+  })
+  await message.save()
+  const messageData =  await DirectMsg.find({ 'users.user':user })
+    .sort({ updatedAt: -1 })
+    .limit(20)
+
+  ctx.status =200
+  ctx.body={
+   data:messageData,
+
+  }
+
+  }
+  catch(err){
+    ctx.status = 400
+    ctx.body ={
+      msg:"ERROR!"
+    }
+    console.log(err)
+  }
+
+}
+
+
+
+  
+
+
+
+exports.readMsgUser = async(ctx,next)  =>{
+
+
+  try{
+  const id = ctx.params.id
+  const message =  await DirectMsg.find({ 'users.user':id })
+    .sort({ updatedAt: -1 })
+    .limit(20)
+    
+    ctx.status =200
+    ctx.body={
+      data:message,
+      links:{
+        post:`${ctx.protocol}s://${ctx.host}${prefix}/${id}/send`,
+      }
+  
+    }
+    console.log(ctx.body)
+  }
+  catch(e)
+  {
+    console.log(e)
+    ctx.status = 400
+    ctx.body ={
+      msg:"ERROR!"
+    }
+  }
+  
+
+  
+}
+
+exports.readMsgAdmin = async(ctx,next) =>{
+  // USE PAGNATION HERE
+  
+  const user = ctx.params.user;
+  console.log(user)
+  const message =  await DirectMsg.find({"users.user":user})
+  .sort({ updatedAt: -1 })
+  .limit(5)
+  console.log(message)
+  ctx.status =200
+  ctx.body={
+    data:message,
+
+  }
+}
+
+  exports.getListofSenders= async(ctx,next) =>{
+    try{
+    console.log("work")
+    // this is powerful /:user/readmsg
+    const list = await DirectMsg.collection.distinct("users.user")
+    const body = list.map(el=>{
+      const links ={
+        post:`${ctx.protocol}s://${ctx.host}${prefix}/adminsend`,
+        readchats:`${ctx.protocol}s://${ctx.host}${prefix}/${el}/readmsg`
+      }
+      const activeUser = {
+        id:el
+      }
+     
+      return {links ,activeUser}
+
+    })
+
+    console.log(ctx.body)
+    ctx.status = 200
+    ctx.body= {
+      body
+  }
+}
+catch(e){
+  ctx.status = 400
+  ctx.body ={
+    msg:"bad request"
+  }
+}
+}
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_applicationModel.module_controller.html">controller</a></li><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="controllers_directMsgModel.module_controller.html">controller</a></li><li><a href="controllers_role-grantaccess.module_controller.html">controller</a></li><li><a href="controllers_usersModel.module_controller.html">controller</a></li><li><a href="controllers_validation.module_controller.html">controller</a></li><li><a href="module-controllers_google-controller.html">controllers/google-controller</a></li><li><a href="module-model_applicationModel.html">model/applicationModel</a></li><li><a href="module-model_directMsgModel.html">model/directMsgModel</a></li><li><a href="module-model_userModel.html">model/userModel</a></li><li><a href="module-models_access.html">models/access</a></li><li><a href="module-routes_directmsg.html">routes/directmsg</a></li><li><a href="module-routes_tldforms.html">routes/tldforms</a></li><li><a href="module-routes_users.html">routes/users</a></li><li><a href="module-test_test_helper.html">test/test_helper</a></li></ul><h3>Global</h3><ul><li><a href="global.html#decodeToken">decodeToken</a></li><li><a href="global.html#issueJWT">issueJWT</a></li><li><a href="global.html#oauth2Client">oauth2Client</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Jul 04 2021 23:30:03 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

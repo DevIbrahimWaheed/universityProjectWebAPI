@@ -1,0 +1,456 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 6003CEM Web API Back End TLD Services
+  description: Trading  License Department API Services. Provides backend services to create License forms and user accounts
+  contact:
+    name: Ibrahim Waheed
+    email: waheedi@coventry.ac.uk
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'https://guru-english-3000.codio-box.uk/api/v1'
+    description: Backend Servers provides API calls to frontend
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: Bearer JWT TOKEN
+
+tags:
+   - name: Services
+     description: Services is for login and signup only 
+   - name: Users
+     description: API endpoints for User Management
+   - name: TLDforms
+     description: API Access and prefrom CRUD operations to License Form and services related to tldforms.
+   - name: DirectMsg
+     description: API access to message services
+paths:
+  /signup:
+    post:
+      tags:
+        - Services
+      description:
+        Create a new user role account allows access to form creation
+      requestBody:
+        description: request data for client is email and password role is set auto with ID auto assign in mongodb
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./users.json#/definitions/user
+      responses:
+        '200':
+          description: JWT token
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/tokenData 
+        '404':
+          description: Error 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/Error 
+                  
+
+  /login:
+    post:
+      tags:
+        - Services
+      description:
+        Access to Protected Routes Login
+      requestBody:
+        description: 
+          client gives email and password and the Bearer is set to the Header HTTP
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./users.json#/definitions/user
+      responses:
+        '200':
+          description: JWT token 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/tokenData 
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Returns a list of users.
+      description: >
+       This endpoint represents all the users in the system , it will 
+       send all the users to be displayed
+      responses:
+        '200':    # status code
+          description: Return JSON  object of Array of Users
+          content:
+            application/json:
+              schema: 
+                $ref: ./users.json#/definitions/GetUsers
+  /{id}/user:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of User ID
+    put:
+      tags:
+        - Users
+      summary:  update user password 
+      description:
+        Update user account
+      requestBody:
+        description: password data
+        required: true
+        content:
+          application/json:
+              schema: 
+                $ref: ./users.json#/definitions/requestpass
+               
+      responses:
+        '201':
+          description: User Password is updated
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: string
+                  
+    get:
+      tags:
+        - Users
+      summary: Returns the data of specific data
+      description: >
+       This endpoint will send data of user via id , it will 
+       send the user data 
+      responses:
+        '200':    # status code
+          description: Return JSON  object of User Data
+          content:
+            application/json:
+              schema:
+                $ref: ./users.json#/definitions/GetUsers
+              
+    delete:
+      tags:
+        - Users     
+      description: 
+        delete user by id                       
+      responses:
+        '200':
+          description: Confirmation of deletion.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Only admin users can delete accounts
+        '404':
+          description: Not found
+  /form/:id/create:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of User ID  
+    post:
+      tags:
+        - TLDforms
+      description:
+        Create a Application Form   
+      requestBody:
+        description: Application data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./formCreateUserType.json#/definitions/formCreateUserType
+      responses:
+        '201':
+          description: Form has been Created
+        '409':
+          description: Form has not been Created          
+  /form/{formid}/update:
+    parameters:
+      - in: path
+        name: formid
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of formid    
+    put:
+      tags:
+        - TLDforms
+      description:
+        update form make amendements
+      requestBody:
+        description: Amended details  of application
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./formCreateUserType.json#/definitions/formCreateUserType
+      responses:
+        '202':
+          description: Confirmation and show the updated data from mongo
+          content:
+            application/json:
+              schema:
+                $ref: ./formCreateUserType.json#/definitions/formCreateUserType                  
+        '400':
+          description: Error could not updated
+        '404':
+          description: Not Found
+  /form/:id/readall:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of User ID
+    get:
+      tags:
+        - TLDforms
+      description: 
+        Get all the forms in mongodb
+      responses:
+        '200':
+          description: View all Forms in mongodb Collections
+  /form/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of User  in Application Model    
+    get:
+      tags:
+        - TLDforms
+      description: 
+        Get all the forms in mongodb
+      responses:
+        '200':
+          description: View all Forms in mongodb Collections
+  /form/{formid}/updatestatus:
+    parameters:
+      - in: path
+        name: formid
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of _id in Application  
+    put:         
+      tags:
+        - TLDforms
+      description:
+        Update the application status
+      requestBody:
+        description: Update the Application status to the enum values set
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./formUpdate.json#/definitions/formUpdate     
+      responses:
+        '202':
+          description: Confirmation and all the forms sent
+          content:
+            application/json:
+              schema:
+                $ref: ./formUpdate.json#/definitions/formUpdate  
+        '404':
+          description: Not found    
+        '400':
+          description: Error Update Status Application
+  /{id}/seesoftdel:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of user in Application Model      
+    get:
+      tags:
+        - TLDforms
+      description: 
+        Get all Inactive false  forms in mongodb
+      responses:
+        '200':
+          description: Return all false inActive Records/Collections of Forms
+  /{formid}/softdelform:
+    parameters:
+      - in: path
+        name: formid
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of _id in Application Model    
+    put:
+      tags:
+        - TLDforms
+      description: 
+        set inActive form true to false
+      responses:
+        '202':
+          description: Form will delete to recover see recover forms
+        '400':
+          description: Error cound not update
+  /{formid}/softrecover:
+    parameters:
+      - in: path
+        name: formid
+        schema:
+          type: string
+        required: true
+        description: Object ID from Mongodb of _id in Application Model    
+    put:
+      tags:
+        - TLDforms
+      description: 
+        set inActive form false to true
+      responses:
+        '202':
+          description: Form is  Recover see check status
+        '400':
+          description: Error cound not update
+  /msg/{id}/usermsg:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Users Model this params allow tag and queries to be perform for the DM services
+    get:
+      tags:
+        - DirectMsg
+      description: 
+        send get data of msg with HATEOS links for post
+      responses:
+        '202':
+          description: Cannot See MSG
+        '400':
+          description: Error 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/Error 
+                  
+  /msg/{id}/send:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Object ID from Users Model this params allow tag and queries to be perform for the DM services           
+    post:
+      tags:
+        - DirectMsg
+      description: 
+        send get data of msg with HATEOS links for post
+      responses:
+        '202':
+          description: Cannot See MSG
+        '400':
+          description: Error 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/Error 
+  /msg/adminsend:                  
+    post:
+      tags:
+        - DirectMsg
+      description: 
+        SEND message to user
+      responses:
+        '202':
+          description: Cannot See MSG
+        '400':
+          description: Error 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/Error 
+  /:user/readmsg:                  
+    get:
+      tags:
+        - DirectMsg
+      description: 
+        get message of user
+      responses:
+        '202':
+          description: Cannot See MSG
+        '400':
+          description: Error 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/Error 
+  /:getlist:                  
+    get:
+      tags:
+        - DirectMsg
+      description: 
+        SEND array of LIst of conversation points of user role inquirers
+      responses:
+        '202':
+          description: Cannot See MSG
+        '400':
+          description: Error 
+          content:
+             application/json:
+                schema:
+                  $ref: ./users.json#/definitions/Error 
+
+    
+    
+    
+
+
+
+
+
+    
+
+
+
+
+                
+            
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+

@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "formUpdate": {
+            "id":"#updateStatus",
+            "title": "Tld Update",
+            "type": "object",
+            "properties": {
+             "application_status":{
+                 "type":"string",   
+            "enum":["new","pending","accepted","rejected"], 
+            "default":"new"
+             }
+             }
+        }
+    }
+}

@@ -1,0 +1,104 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+    "user":{
+    "title":"users",
+    "type":"object",
+    "properties":{
+      "email":{
+        "description": "Email of the user",
+        "type":"string",
+        "format": "email"
+      },
+      "password":{
+        "type":"string"
+      },
+      "role":{
+        "type":"string",
+        "enum":["admin","user"],
+        "default":"user"
+      }
+    },
+    "required":[
+      "email",
+      "password"
+    ]
+    },
+
+
+    "tokenData":{
+        "type":"object",
+        "title": "jwttoken",
+        "properties": {
+        "token":{"type":"string"},
+        "expiresIn":{"type":"number"}
+
+        }
+  
+
+
+    },
+     
+    "Error":{
+        "type":"object",
+        "title": "error",
+        "properties": {
+        "msg":{"type":"string"}
+        }
+  
+
+
+    }, 
+
+
+    "GetUsers": {
+      "title": "List of users",
+      "type": "array",
+      "items": {
+          "type": "object",
+          "properties": {
+              "email": {
+                  "type": "string"
+              },
+              "password": {
+                  "type": "string"
+              },
+              "role": {
+                  "type": "string",
+                  "enum": [
+                      "user",
+                      "admin"
+                  ],
+                  "default": "user"
+              },
+              "_id": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F]{24}$"
+              },
+              "__v": {
+                  "type": "number"
+              }
+          }
+      }
+  },
+  
+
+
+  "requestpass":{
+    "title":"password validate",
+    "type":"object",
+    "properties":{
+      "password":{
+        "type":"string"
+      }
+    },
+    "required":[
+      "password"
+    ]
+    }
+
+
+
+  }
+
+}
