@@ -1,0 +1,31 @@
+@import '~antd/dist/antd.css'; 
+
+
+  
+  .site-layout .site-layout-background {
+    background: rgba(255, 255, 255, 0.863);
+  }
+    [data-theme="dark"] .site-layout .site-layout-background {
+      background: #141414;
+    }
+
+
+    
+.ant-layout-sider-trigger{
+  background-color: #3a4a69
+}
+
+.fade-appear {
+  opacity: 0;
+  animation-duration: .5s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.55, 0, 0.55, 0.2);
+  animation-play-state: paused;
+}
+
+.fade-leave {
+  animation-duration: .5s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.55, 0, 0.55, 0.2);
+  animation-play-state: paused;
+}
